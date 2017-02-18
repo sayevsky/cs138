@@ -7,7 +7,6 @@
 package chord
 
 import (
-	"math/big"
 	"testing"
 )
 

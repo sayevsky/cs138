@@ -1,7 +1,6 @@
 package main
 
 import (
-	"../chord"
 	"bufio"
 	"flag"
 	"fmt"
@@ -9,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"github.com/sayevsky/cs138/chord"
 )
 
 func NodeStr(node *chord.Node) string {
