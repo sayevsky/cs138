@@ -17,23 +17,32 @@ import (
 
 /* Get a value in the datastore, provided an abitrary node in the ring */
 func Get(node *Node, key string) (string, error) {
+	remoteNode, err := node.locate(key)
+	if err !=nil {
+		return "", err
+	}
+	value, err := Get_RPC(remoteNode, key)
 
-	//TODO students should implement this method
-	return "", nil
+	return value, nil
 }
 
 /* Put a key/value in the datastore, provided an abitrary node in the ring */
 func Put(node *Node, key string, value string) error {
+	remoteNode, err := node.locate(key)
+	if err !=nil {
+		return err
+	}
+	err = Put_RPC(remoteNode, key, value)
 
-	//TODO students should implement this method
-	return nil
+	return err
 }
 
 /* Internal helper method to find the appropriate node in the ring */
 func (node *Node) locate(key string) (*RemoteNode, error) {
 
-	//TODO students should implement this method
-	return nil, nil
+	remoteNode, err := node.findSuccessor(HashKey(key))
+
+	return remoteNode, err
 }
 
 /* When we discover a new predecessor we may need to transfer some keys to it */
@@ -51,8 +60,12 @@ func (node *Node) GetLocal(req *KeyValueReq, reply *KeyValueReply) error {
 	if err := validateRpc(node, req.NodeId); err != nil {
 		return err
 	}
-
-	//TODO students should implement this method
+	key := req.Key
+	node.dsLock.RLock()
+	value := node.dataStore[key]
+	node.dsLock.RUnlock()
+	reply.Key = key
+	reply.Value = value
 	return nil
 }
 
@@ -61,8 +74,15 @@ func (node *Node) PutLocal(req *KeyValueReq, reply *KeyValueReply) error {
 	if err := validateRpc(node, req.NodeId); err != nil {
 		return err
 	}
+	key := req.Key
+	value := req.Value
 
-	//TODO students should implement this method
+	node.dsLock.Lock()
+	node.dataStore[key] = value
+	node.dsLock.Unlock()
+
+	reply.Key = key
+	reply.Value = value
 	return nil
 }
 

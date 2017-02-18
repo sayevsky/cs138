@@ -46,13 +46,16 @@ func (node *Node) GetSuccessorId(req *RemoteId, reply *IdReply) error {
 	if err := validateRpc(node, req.Id); err != nil {
 		return err
 	}
-	//TODO students should implement this method
+
+	reply.Id = node.Successor.Id
+	reply.Addr = node.Successor.Addr
+	reply.Valid = true
 	return nil
 }
 
 /* RPC */
 func (node *Node) Notify(remoteNode *RemoteNode, reply *RpcOkay) error {
-	//TODO students should implement this method
+	node.notify(remoteNode)
 	return nil
 }
 
@@ -61,8 +64,13 @@ func (node *Node) FindSuccessor(query *RemoteQuery, reply *IdReply) error {
 	if err := validateRpc(node, query.FromId); err != nil {
 		return err
 	}
-	//TODO students should implement this method
-	return nil
+
+	successor, err := node.findSuccessor(query.Id)
+	reply.Id = successor.Id
+	reply.Addr = successor.Addr
+	reply.Valid = true
+
+	return err
 }
 
 /* RPC */

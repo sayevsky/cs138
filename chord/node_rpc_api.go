@@ -63,7 +63,6 @@ func GetPredecessorId_RPC(remoteNode *RemoteNode) (*RemoteNode, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	if !reply.Valid {
 		return nil, err
 	}

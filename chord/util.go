@@ -52,14 +52,27 @@ B-\   /-X
    ---
 */
 func Between(nodeX, nodeA, nodeB []byte) bool {
-
-	//TODO students should implement this method
-	return false
+	x := big.Int{}
+	x.SetBytes(nodeX)
+	a := big.Int{}
+	a.SetBytes(nodeA)
+	b := big.Int{}
+	b.SetBytes(nodeB)
+	// b >= a => a < x < b
+	if b.Cmp(&a) >= 0 {
+		return x.Cmp(&a) == 1 && x.Cmp(&b) == -1
+	} else {
+		// b < a => x > a || x < b
+		return x.Cmp(&a) == 1 || x.Cmp(&b) == -1
+	}
 }
 
 /* Is X between (A : B] */
 func BetweenRightIncl(nodeX, nodeA, nodeB []byte) bool {
+	return Between(nodeX, nodeA, nodeB) || EqualIds(nodeX, nodeB)
 
-	//TODO students should implement this method
-	return false
+}
+
+func IntToBytes(i int64) []byte {
+	return (&big.Int{}).SetInt64(i).Bytes()
 }

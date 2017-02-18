@@ -19,7 +19,9 @@ type FingerEntry struct {
 
 /* Create initial finger table that only points to itself, will be fixed later */
 func (node *Node) initFingerTable() {
-	//TODO students should implement this method
+	//TODO implement finger table
+	//for now use linear search
+	node.Successor = node.RemoteSelf
 }
 
 /* Called periodically (in a seperate go routine) to fix entries in our finger table. */
