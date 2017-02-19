@@ -50,6 +50,13 @@ func TestBetween(t *testing.T) {
 	check(Between, x, a, b, false, t)
 	check(BetweenRightIncl, x, a, b, true, t)
 
+	a = IntToBytes(205)
+	b = IntToBytes(205)
+	x = IntToBytes(3)
+	check(Between, x, a, b, false, t)
+	check(BetweenRightIncl, x, a, b, false, t)
+
+
 }
 
 func check(fn between, x, a, b []byte, expectedResult bool, t *testing.T) {

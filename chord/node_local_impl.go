@@ -43,7 +43,11 @@ func (node *Node) stabilize(ticker *time.Ticker) {
 			node.Successor = x
 		}
 
-		// corner case
+		// corner case: fix successor pointer
+		// reason is that if we have one node in cluster successor is self node
+		// if second node join it will not create a ring since successor of the first node point to self
+		// to break this tie successor of first node should point to predecessor
+		// this if expression equals true only then new node joining to cluster with one node.
 		if node.Predecessor != nil && EqualIds(node.Id, node.Successor.Id) && !EqualIds(node.Id, node.Predecessor.Id) {
 			node.Successor = node.Predecessor
 		}
@@ -68,6 +72,7 @@ func (node *Node) notify(remoteNode *RemoteNode) {
 // Psuedocode from figure 4 of chord paper
 func (node *Node) findSuccessor(id []byte) (*RemoteNode, error) {
 	// corner case: if node == node.successor then return this node
+
 	if EqualIds(node.Id, node.Successor.Id) {
 		return node.Successor, nil
 	}
@@ -81,18 +86,19 @@ func (node *Node) findSuccessor(id []byte) (*RemoteNode, error) {
 // Psuedocode from figure 4 of chord paper
 func (node *Node) findPredecessor(id []byte) (*RemoteNode, error) {
 	n1 := node.RemoteSelf
-	successor, err := GetSuccessorId_RPC(n1)
-	if err != nil {
-		return nil, err
-	}
-	// make linear search for now
-	//TODO change to finger table
+	successor := node.Successor
 	for !BetweenRightIncl(id, n1.Id, successor.Id) {
-		n1 = successor
+		var err error
+		if err != nil {
+			log.Println("error to get successor", err)
+		}
+		n1, err = ClosestPrecedingFinger_RPC(n1, id)
 		successor, err = GetSuccessorId_RPC(n1)
 		if err != nil {
+			log.Println("error to get ClosestPrecedingFinger", err)
 			return nil, err
 		}
+
 	}
 	return n1, nil
 }

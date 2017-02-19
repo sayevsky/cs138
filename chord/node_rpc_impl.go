@@ -78,6 +78,20 @@ func (node *Node) ClosestPrecedingFinger(query *RemoteQuery, reply *IdReply) err
 		return err
 	}
 
-	//TODO students should implement this method
+	id := query.Id
+
+	for i:= KEY_LENGTH - 1; i > -1; i-- {
+		finger := node.FingerTable[i].Node
+		if Between(finger.Id, node.Id, id) {
+			reply.Id =  finger.Id
+			reply.Addr = finger.Addr
+			reply.Valid = true
+			return nil
+		}
+	}
+
+	reply.Id = node.Id
+	reply.Addr = node.Addr
+	reply.Valid = true
 	return nil
 }
