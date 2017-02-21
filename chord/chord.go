@@ -121,7 +121,9 @@ func (node *Node) startRpcServer() {
 			return
 		}
 		if conn, err := node.Listener.Accept(); err != nil {
-			log.Fatal("accept error: " + err.Error())
+			if !node.IsShutdown {
+				log.Fatal("accept error: " + err.Error())
+			}
 		} else {
 			go rpc.ServeConn(conn)
 		}
@@ -135,6 +137,13 @@ func ShutdownNode(node *Node) {
 	time.Sleep(time.Millisecond * 2000)
 	node.Listener.Close()
 
-	//TODO students should modify this method to gracefully shutdown a node
+	// transfer keys to successor if
+	if !EqualIds(node.Id, node.Successor.Id) {
+		node.dsLock.Lock()
+		for k, v := range node.dataStore {
+			Put_RPC(node.Successor, k, v)
+		}
+		node.dsLock.Unlock()
+	}
 
 }

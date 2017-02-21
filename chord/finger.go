@@ -37,7 +37,7 @@ func (node *Node) fixNextFinger(ticker *time.Ticker) {
 		for _ = range ticker.C {
 			i = (i + 1) % KEY_LENGTH
 			finger := node.FingerTable[i]
-			nextStart, err := node.findSuccessor(finger.Start)
+			nextStart, err := node.findSuccessor(finger.Start, false)
 			if err == nil {
 				finger.Node = nextStart
 				node.FingerTable[i] = finger

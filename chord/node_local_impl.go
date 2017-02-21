@@ -64,17 +64,20 @@ func (node *Node) notify(remoteNode *RemoteNode) {
 		// corner case: if remotenode == node => do not set predecessor
 		if !EqualIds(remoteNode.Id, node.Id) {
 			node.Predecessor = remoteNode
-			//TransferKeys_RPC(node.RemoteSelf, predecessor, remoteNode.Id)
+			TransferKeys_RPC(node.Successor, node.RemoteSelf, node.Predecessor.Id)
 		}
 	}
 }
 
 // Psuedocode from figure 4 of chord paper
-func (node *Node) findSuccessor(id []byte) (*RemoteNode, error) {
-	// corner case: if node == node.successor then return this node
+func (node *Node) findSuccessor(id []byte, islog bool) (*RemoteNode, error) {
 
+	// corner case: if node == node.successor then return this node
 	if EqualIds(node.Id, node.Successor.Id) {
 		return node.Successor, nil
+	}
+	if islog {
+		log.Println("findSuccessor", id)
 	}
 	predecessor, err := node.findPredecessor(id)
 	if err != nil {

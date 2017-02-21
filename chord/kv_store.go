@@ -9,6 +9,7 @@ package chord
 
 import (
 	"fmt"
+	"log"
 )
 
 /*                             */
@@ -28,7 +29,10 @@ func Get(node *Node, key string) (string, error) {
 
 /* Put a key/value in the datastore, provided an abitrary node in the ring */
 func Put(node *Node, key string, value string) error {
+	log.Println("Put", key, value)
 	remoteNode, err := node.locate(key)
+	log.Println("located node", remoteNode.Id, "hashed key is", HashKey(key))
+
 	if err !=nil {
 		return err
 	}
@@ -40,15 +44,9 @@ func Put(node *Node, key string, value string) error {
 /* Internal helper method to find the appropriate node in the ring */
 func (node *Node) locate(key string) (*RemoteNode, error) {
 
-	remoteNode, err := node.findSuccessor(HashKey(key))
+	remoteNode, err := node.findSuccessor(HashKey(key), true)
 
 	return remoteNode, err
-}
-
-/* When we discover a new predecessor we may need to transfer some keys to it */
-func (node *Node) obtainNewKeys() error {
-	//TODO students should implement this method
-	return nil
 }
 
 /*                                                         */
@@ -87,12 +85,33 @@ func (node *Node) PutLocal(req *KeyValueReq, reply *KeyValueReply) error {
 }
 
 /* RPC */
+/*
+req.NodeId is a successor that has keys we want to transfer to joined node (req.PredId)
+which are between
+ */
 func (node *Node) TransferKeys(req *TransferReq, reply *RpcOkay) error {
 	if err := validateRpc(node, req.NodeId); err != nil {
 		return err
 	}
 
-	//TODO students should implement this method
+	joined, errFind := node.findSuccessor(req.FromId, false)
+	if errFind != nil {
+		return errFind
+	}
+	predId := req.PredId
+
+	node.dsLock.Lock()
+	for k, v := range node.dataStore {
+		if BetweenRightIncl(HashKey(k), predId, req.FromId){
+			Put_RPC(joined, k, v)
+			delete(node.dataStore, k)
+		}
+	}
+
+	node.dsLock.Unlock()
+
+	reply.Ok = true
+
 	return nil
 }
 

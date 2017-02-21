@@ -56,7 +56,7 @@ func main() {
 	}
 
 	for {
-		fmt.Printf("quit|node|table|addr|data|get|put > ")
+		fmt.Printf("quit|node|table|addr|data|get|put|shutNode|addNode > ")
 		reader := bufio.NewReader(os.Stdin)
 		line, _ := reader.ReadString('\n')
 		line = strings.TrimSpace(line)

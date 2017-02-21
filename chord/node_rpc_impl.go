@@ -64,7 +64,7 @@ func (node *Node) FindSuccessor(query *RemoteQuery, reply *IdReply) error {
 	if err := validateRpc(node, query.FromId); err != nil {
 		return err
 	}
-	successor, err := node.findSuccessor(query.Id)
+	successor, err := node.findSuccessor(query.Id, false)
 	reply.Id = successor.Id
 	reply.Addr = successor.Addr
 	reply.Valid = true
