@@ -101,6 +101,12 @@ func main() {
 				chord.ShutdownNode(node)
 			}
 			return
+		case "addNode":
+			node, err := chord.CreateNode(parent)
+			if err != nil {
+				log.Println("Can't create node", err)
+			}
+			nodes = append(nodes, node)
 		default:
 			continue
 		}
