@@ -1,11 +1,11 @@
 package main
 
 import (
-	"./tapestry"
 	"bufio"
 	"fmt"
 	"os"
 	"strings"
+	"github.com/sayevsky/cs138/tapestry/tapestry"
 )
 
 func printHelp() {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./tapestry"
 	"flag"
 	"fmt"
+	"github.com/sayevsky/cs138/tapestry/tapestry"
 )
 
 func main() {
